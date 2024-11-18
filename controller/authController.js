@@ -112,4 +112,10 @@ const resetPassword = async(request, reply) => {
 }
 
 
-export {register, login, forgotPassword, resetPassword};
+const logout = async(request, reply) => {
+    //JWT stateless, use strategy of refresh token
+    reply.send({message: "User Logged Out"});
+}
+
+
+export {register, login, forgotPassword, resetPassword, logout};

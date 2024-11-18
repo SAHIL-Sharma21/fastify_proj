@@ -6,6 +6,8 @@ import {fastifyEnv} from '@fastify/env';
 import { fastifyCors } from '@fastify/cors';
 import {fastifySensible} from '@fastify/sensible';
 import {fastifyMongo} from './plugins/mongoDB.js'
+import {jwtFastify} from './plugins/jwt.js'
+import {authRouter} from './routes/auth.js'
 
 const fastify = Fastify({logger: true});
 
@@ -38,6 +40,11 @@ fastify.register(fastifyEnv, {
 
 //register custom plugin
 fastify.register(fastifyMongo);
+fastify.register(jwtFastify);
+
+//register routes
+fastify.register(authRouter, {prefix: "/api/auth"});
+
 
 fastify.get("/", function(request, reply){
     reply.send({hello: "Fastify"});
