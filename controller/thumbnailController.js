@@ -4,6 +4,7 @@ import fs from 'fs';
 import {pipeline} from 'stream';
 import util from 'util'
 
+
  
 const pipelineAsync = util.promisify(pipeline);
 
@@ -77,4 +78,85 @@ const getThumbnail = async (request, reply) => {
 }
 
 
-export {createThumbnail};
+const updateThumbnail = async(request, reply) => {
+    try {
+        const updatedData = request.body;
+        const thumbnail = await Thumbnail.findByIdAndUpdate(
+            {
+                _id: request.params.id,
+                user: request.user.id
+            },
+            updatedData,
+            {new: true}
+        );
+
+    if(!thumbnail){
+        return reply.notFound("Thumbnail not found");
+    }
+    reply.send(thumbnail);
+    } catch (err) {
+        reply.send(err);
+    }
+}
+
+
+const deleteThumbnail = async (request, reply) => {
+    try {
+        const thumbnail = await Thumbnail.findByIdAndDelete(
+            {
+                _id: request.params.id,
+                user: request.user.id,
+            }
+        );
+        if(!thumbnail){
+            return reply.notFound("Thumbnail not found")
+        }
+
+        const filePath = path.join(
+            __dirname,
+            "..",
+            "uploads",
+            "thumbnails",
+            path.basename(thumbnail.image)
+        );
+
+        fs.unlink(filePath, (err) => {
+            if(err){
+                fastify.log.error(err);
+            }
+        })
+
+        reply.send({message: "Thumbnail deleted"});
+    } catch (err) {
+        reply.send(err);
+    }
+}
+
+const deleteAllThumbnails = async(request, reply) => {
+    try {
+        
+        const thumbnails = await Thumbnail.find(
+            {user: request.user.id}
+        );
+
+        await Thumbnail.deleteMany({user: request.user.id})
+
+        for(const thumbnail of thumbnails){
+            const filePath = path.join(
+                __dirname,
+                "..",
+                "uploads",
+                "thumbnails",
+                path.basename(thumbnail.image)
+            );
+            fs.unlink(filePath, (err) => {
+                if(err) fastify.log.error(err)
+            });
+        }
+        reply.send({message: "All thumbnails deleted"});
+    } catch (err) {
+        reply.send(err);
+    }
+}
+
+export {createThumbnail, getThumbnails, getThumbnail, updateThumbnail, deleteThumbnail, deleteAllThumbnails};

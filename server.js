@@ -10,6 +10,7 @@ import {jwtFastify} from './plugins/jwt.js'
 import {authRouter} from './routes/auth.js'
 import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
+import {thumbnailRouter} from './routes/thumbnail.js'
 
 const fastify = Fastify({logger: true});
 
@@ -52,7 +53,7 @@ fastify.register(jwtFastify);
 
 //register routes
 fastify.register(authRouter, {prefix: "/api/auth"});
-
+fastify.register(thumbnailRouter, {prefix: "/api/thumbnail"});
 
 fastify.get("/", function(request, reply){
     reply.send({hello: "Fastify"});
