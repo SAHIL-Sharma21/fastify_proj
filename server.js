@@ -8,6 +8,8 @@ import {fastifySensible} from '@fastify/sensible';
 import {fastifyMongo} from './plugins/mongoDB.js'
 import {jwtFastify} from './plugins/jwt.js'
 import {authRouter} from './routes/auth.js'
+import multipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
 
 const fastify = Fastify({logger: true});
 
@@ -36,6 +38,12 @@ fastify.register(fastifyEnv, {
             }
         }
     }
+});
+fastify.register(multipart);
+//configure file 
+fastify.register(fastifyStatic, {
+    root: path.join(__dirname, "uploads"),
+    prefix: "/uploads/"
 });
 
 //register custom plugin

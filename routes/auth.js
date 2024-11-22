@@ -8,6 +8,6 @@ export const authRouter = async(fastify, opts) => {
     fastify.post("/reset-password/:token", resetPassword);
     fastify.post("/logout", {
         preHandler: [fastify.authenticate], //middleware in fastify and we have to write plugin for that
-    } ,logout)
+    } ,logout);
 }
 
